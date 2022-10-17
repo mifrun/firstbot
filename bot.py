@@ -34,19 +34,23 @@ def find_text(chat_id: int):
     """
     Определяем какой текст будет отправлен
     """
-    values = compliments.all_values()
-    size: int = len(values)
-    rnd_index = -1
     now = datetime.now()
+    clean_object = {"date": now.date(), "hour": now.hour, "count": 0, "list": list()}
+
+    values = compliments.all_values()
+    size = len(values)
+    rnd_index = -1
+
     if chat_id not in user_dict:
-        user_dict[chat_id] = {"date": now.date(), "hour": now.hour, "count": 0, "list": list()}
+        user_dict[chat_id] = dict.copy(clean_object)
     local_obj = user_dict[chat_id]
     local_list = local_obj["list"]
+
     if len(local_list) == size:
         local_list.clear()
 
     if now.date() != local_obj["date"] or local_obj["hour"] != now.hour:
-        local_obj["count"] = 0
+        local_obj.copy(clean_object)
 
     if local_obj["count"] == 5:
         return f'Дорогая, ты прекрасна, на текущий момент ты уже получила приястностей, пора поделать дела😉 ' \
@@ -72,8 +76,8 @@ def start(message):
                          message.from_user.first_name),
                      reply_markup=get_markup()
                      )
-    user_dict[chat_id] = list()
-    # bot.send_message(message.from_user.id, compliments.text_message())
+    now = datetime.now()
+    user_dict[chat_id] = {"date": now.date(), "hour": now.hour, "count": 0, "list": list()}
 
 
 @bot.message_handler(content_types=['text'])

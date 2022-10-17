@@ -8,6 +8,16 @@ import compliments
 import config
 
 bot = telebot.TeleBot(config.token)
+user_dict = {}
+
+
+class User:
+    def __init__(self, city):
+        # self.city = city
+        keys = ["time", "compliment_id"]
+
+        for key in keys:
+            self.key = None
 
 
 def get_markup():
@@ -78,3 +88,4 @@ def send_message(message):
 
 
 bot.polling(none_stop=True, interval=0)
+

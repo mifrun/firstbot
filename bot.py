@@ -1,13 +1,16 @@
+import asyncio
 import random
 from datetime import datetime
 
+# telebot
+from telebot.async_telebot import AsyncTeleBot
 import telebot
 from telebot import types  # кнопки
 
 import compliments
 import config
 
-bot = telebot.TeleBot(config.token)
+bot = AsyncTeleBot(config.token)
 user_dict = {}
 
 
@@ -20,6 +23,31 @@ class User:
             self.key = None
 
 
+@bot.message_handler(commands=['start'])
+async def start(message):
+    """
+        стартовое сообщение
+    """
+    chat_id = message.chat.id
+    await bot.send_message(chat_id,
+                           text="Привет, {}, тут ты можешь получить информацию о тебе ;)".format(
+                               message.from_user.first_name),
+                           reply_markup=get_markup()
+                           )
+    now = datetime.now()
+    user_dict[chat_id] = {"date": now.date(), "hour": now.hour, "count": 0, "list": list()}
+
+
+@bot.message_handler(func=lambda message: message.text == "❤Получить приятность")
+async def send_message(message):
+    """
+        когда бот уже активно принимает сообщения
+    """
+    chat_id = message.chat.id
+    message_text = get_text_message(chat_id)
+    await bot.send_message(chat_id, message_text, reply_markup=get_markup())
+
+
 def get_markup():
     """
         функция которая возвращает кнопку в телеграмм-канале
@@ -30,10 +58,11 @@ def get_markup():
     return markup
 
 
-def find_text(chat_id: int):
+def get_text_message(chat_id: int, param: bool = False):
     """
-    Определяем какой текст будет отправлен
+       Определяем какой текст будет отправлен
     """
+    print(f"get_text_message {chat_id}")
     now = datetime.now()
     clean_object = {"date": now.date(), "hour": now.hour, "count": 0, "list": list()}
 
@@ -49,47 +78,38 @@ def find_text(chat_id: int):
     if len(local_list) == size:
         local_list.clear()
 
-    if now.date() != local_obj["date"] or local_obj["hour"] != now.hour:
+    if local_obj["date"] != now.date() or local_obj["hour"] != now.hour:
         local_obj.copy(clean_object)
 
-    if local_obj["count"] == 5:
-        return f'Дорогая, ты прекрасна, на текущий момент ты уже получила приястностей, пора поделать дела😉 ' \
+    if local_obj["count"] >= 5 or not param:
+        return f'Дорогая, ты прекрасна, на текущий момент ты уже получила приятностей, пора поделать дела😉' \
                '(Возвращайся чуть позже ❤)'
 
-    while rnd_index < 0 or local_list.count(rnd_index) != 0:
-        rnd_index = random.randrange(size)
+    while rnd_index < 0 or values[rnd_index] in local_list:
+        rnd_index = random.randint(0, size - 1)
 
-    local_list.append(rnd_index)
+    local_list.append(values[rnd_index])
     local_obj["count"] += 1
-
     return values[rnd_index]
 
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    """
-    стартовое сообщение
-    """
-    chat_id = message.chat.id
-    bot.send_message(chat_id,
-                     text="Привет, {}, тут ты можешь получить информацию о тебе ;)".format(
-                         message.from_user.first_name),
-                     reply_markup=get_markup()
-                     )
-    now = datetime.now()
-    user_dict[chat_id] = {"date": now.date(), "hour": now.hour, "count": 0, "list": list()}
+async def send_on_time():
+    print(f"send_on_time")
+    while True:
+        second = random.randrange(15)
+        await asyncio.sleep(60*60+second)
+        if datetime.now().hour == 12 or datetime.now().hour == 16:
+            for chat_id in user_dict:
+                await bot.send_message(chat_id, get_text_message(chat_id, True), reply_markup=get_markup())
+        print(f"Отправка по времени, ждали:{second}")
 
 
-@bot.message_handler(content_types=['text'])
-def send_message(message):
-    """
-    когда бот уже активно принимает сообщения
-    """
-    chat_id = message.chat.id
-    message_text = find_text(chat_id)
-    if message.text == "❤Получить приятность":
-        bot.send_message(chat_id, message_text, reply_markup=get_markup())
-
-
-bot.polling(none_stop=True, interval=0)
-
+if __name__ == '__main__':
+    loop = asyncio.new_event_loop()
+    tasks = [
+        loop.create_task(bot.polling()),
+        loop.create_task(send_on_time()),
+    ]
+    wait_tasks = asyncio.wait(tasks)
+    loop.run_until_complete(wait_tasks)
+    loop.close()

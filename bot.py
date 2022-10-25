@@ -81,7 +81,7 @@ def get_text_message(chat_id: int, param: bool = False):
     if local_obj["date"] != now.date() or local_obj["hour"] != now.hour:
         local_obj.copy(clean_object)
 
-    if local_obj["count"] >= 5 or not param:
+    if local_obj["count"] >= 5 and not param:
         return f'Дорогая, ты прекрасна, на текущий момент ты уже получила приятностей, пора поделать дела😉' \
                '(Возвращайся чуть позже ❤)'
 

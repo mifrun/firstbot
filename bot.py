@@ -98,7 +98,8 @@ async def send_on_time():
     while True:
         second = random.randrange(15)
         await asyncio.sleep(30)
-        if (datetime.now().hour == 14 and datetime.now().minute == 1) or (datetime.now().hour == 17 and datetime.now().minute == 13):
+        if (datetime.now().hour == 14 and datetime.now().minute == 3) or (
+                datetime.now().hour == 17 and datetime.now().minute == 13):
             # for chat_id in user_dict:
             await bot.send_message(5141887105, get_text_message(5141887105, True), reply_markup=get_markup())
         print(f"Отправка по времени, ждали:{second}")

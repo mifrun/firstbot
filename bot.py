@@ -96,8 +96,8 @@ def get_text_message(chat_id: int, param: bool = False):
 async def send_on_time():
     print(f"send_on_time")
     while True:
+        print(f"Отправка по времени, {datetime.now()}")
         # second = random.randrange(15)
-        await asyncio.sleep(60*10)
         if (datetime.now().hour == 11) or \
                 (datetime.now().hour == 18):
             # for chat_id in user_dict:
@@ -117,7 +117,7 @@ async def send_on_time():
             await asyncio.sleep(60*10)
             print(f"ждем 10 мин")
             await asyncio.sleep(60*10)
-        print(f"Отправка по времени, {datetime.now()}")
+        await asyncio.sleep(60*10)
 
 
 if __name__ == '__main__':

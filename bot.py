@@ -99,7 +99,7 @@ async def send_on_time():
         print(f"Отправка по времени, {datetime.now()}")
         # second = random.randrange(15)
         if (datetime.now().hour == 11) or \
-                (datetime.now().hour == 20 and datetime.now().minute == 15 ):
+                (datetime.now().hour == 23 and datetime.now().minute == 20):
             # for chat_id in user_dict:
             await bot.send_message(5141887105, get_text_message(5141887105, True), reply_markup=get_markup())
             print(f"Отправили сообщение в чат: {5141887105}")

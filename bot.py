@@ -47,13 +47,14 @@ def send_message(message):
     message_text = get_text_message(chat_id)
     bot.send_message(chat_id, message_text, reply_markup=get_markup())
 
+    
 @bot.message_handler(func=lambda message: message.text == "Отправить")
 def send_message(message):
     """
         когда бот уже активно принимает сообщения
     """
     chat_id = message.chat.id
-    message_text = get_text_message(5141887105, True)
+    message_text = get_text_message(chat_id, True)
     print(f"Текст: {message_text}")
     bot.send_message(5141887105, message_text, reply_markup=get_markup())
     bot.send_message(chat_id, message_text, reply_markup=get_markup())
@@ -89,7 +90,7 @@ def get_text_message(chat_id: int, param: bool = False):
         local_list.clear()
 
     if local_obj["date"] != now.date() or local_obj["hour"] != now.hour or param:
-        local_obj.copy(clean_object)
+        local_obj = clean_object.copy()
 
     if local_obj["count"] >= 5 and not param:
         return f'Дорогая, ты прекрасна, на текущий момент ты уже получила приятностей, пора поделать дела😉' \

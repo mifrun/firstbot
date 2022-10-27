@@ -54,6 +54,7 @@ def send_message(message):
     """
     chat_id = message.chat.id
     message_text = get_text_message(5141887105, True)
+    print(f"Текст: {message_text}")
     bot.send_message(5141887105, message_text, reply_markup=get_markup())
     bot.send_message(chat_id, message_text, reply_markup=get_markup())
 

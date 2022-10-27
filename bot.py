@@ -1,9 +1,9 @@
-import asyncio
+# import asyncio
 import random
 from datetime import datetime
 
 # telebot
-from telebot.async_telebot import AsyncTeleBot
+# from telebot.async_telebot import AsyncTeleBot
 import telebot
 from telebot import types  # кнопки
 
@@ -103,16 +103,16 @@ def get_text_message(chat_id: int, param: bool = False):
     return values[rnd_index]
 
 
-async def send_on_time():
-    print(f"send_on_time")
-    while True:
-        # second = random.randrange(15)
-        if (datetime.now().hour == 7 and datetime.now().hour.minute == 20) or (
-                datetime.now().hour == 20 and datetime.now().hour.minute == 43):
-            # for chat_id in user_dict:
-            print(f"Отправили сообщение в чат: {5141887105}")
-        await asyncio.sleep(5)
-        print(f"Отправка по времени, {datetime.now()}")
+#async def send_on_time():
+#    print(f"send_on_time")
+#    while True:
+#        # second = random.randrange(15)
+#        if (datetime.now().hour == 7 and datetime.now().hour.minute == 20) or (
+#                datetime.now().hour == 20 and datetime.now().hour.minute == 43):
+#            # for chat_id in user_dict:
+#            print(f"Отправили сообщение в чат: {5141887105}")
+#        await asyncio.sleep(5)
+#        print(f"Отправка по времени, {datetime.now()}")
 
 
 if __name__ == '__main__':

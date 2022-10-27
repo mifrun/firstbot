@@ -47,6 +47,14 @@ async def send_message(message):
     message_text = get_text_message(chat_id)
     await bot.send_message(chat_id, message_text, reply_markup=get_markup())
 
+@bot.message_handler(func=lambda message: message.text == "Отправить")
+async def send_message(message):
+    """
+        когда бот уже активно принимает сообщения
+    """
+    chat_id = message.chat.id
+    await bot.send_message(5141887105, get_text_message(5141887105, True), reply_markup=get_markup())
+    await bot.send_message(chat_id, get_text_message(chat_id, True), reply_markup=get_markup())
 
 def get_markup():
     """
@@ -100,7 +108,6 @@ async def send_on_time():
         if (datetime.now().hour == 7 and datetime.now().hour.minute == 20) or (
                 datetime.now().hour == 20 and datetime.now().hour.minute == 43):
             # for chat_id in user_dict:
-            await bot.send_message(5141887105, get_text_message(5141887105, True), reply_markup=get_markup())
             print(f"Отправили сообщение в чат: {5141887105}")
         await asyncio.sleep(5)
         print(f"Отправка по времени, {datetime.now()}")
@@ -110,7 +117,7 @@ if __name__ == '__main__':
     loop = asyncio.new_event_loop()
     tasks = [
         loop.create_task(bot.polling()),
-        loop.create_task(send_on_time()),
+        # loop.create_task(send_on_time()),
     ]
     wait_tasks = asyncio.wait(tasks)
     loop.run_until_complete(wait_tasks)

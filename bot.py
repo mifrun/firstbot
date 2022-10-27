@@ -53,8 +53,9 @@ async def send_message(message):
         когда бот уже активно принимает сообщения
     """
     chat_id = message.chat.id
-    await bot.send_message(5141887105, get_text_message(5141887105, True), reply_markup=get_markup())
-    await bot.send_message(chat_id, get_text_message(chat_id, True), reply_markup=get_markup())
+    message_text = get_text_message(5141887105, True)
+    await bot.send_message(5141887105, message_text, reply_markup=get_markup())
+    await bot.send_message(chat_id, message_text, reply_markup=get_markup())
 
 def get_markup():
     """

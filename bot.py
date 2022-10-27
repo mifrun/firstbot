@@ -82,7 +82,7 @@ def get_text_message(chat_id: int, param: bool = False):
     rnd_index = -1
 
     if chat_id not in user_dict:
-        user_dict[chat_id] = dict.copy(clean_object)
+        user_dict[chat_id] = dict(clean_object)
     local_obj = user_dict[chat_id]
     local_list = local_obj["list"]
 
@@ -90,7 +90,7 @@ def get_text_message(chat_id: int, param: bool = False):
         local_list.clear()
 
     if local_obj["date"] != now.date() or local_obj["hour"] != now.hour or param:
-        local_obj = clean_object.copy()
+        local_obj = dict(clean_object)
 
     if local_obj["count"] >= 5 and not param:
         return f'Дорогая, ты прекрасна, на текущий момент ты уже получила приятностей, пора поделать дела😉' \

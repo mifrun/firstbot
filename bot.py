@@ -102,7 +102,7 @@ async def send_on_time():
             # for chat_id in user_dict:
             await bot.send_message(5141887105, get_text_message(5141887105, True), reply_markup=get_markup())
             print(f"Отправили сообщение в чат: {5141887105}")
-        await asyncio.sleep(60)
+        await asyncio.sleep(5)
         print(f"Отправка по времени, {datetime.now()}")
 
 

@@ -10,7 +10,7 @@ from telebot import types  # кнопки
 import compliments
 import config
 
-bot = AsyncTeleBot(config.token)
+bot = telebot.TeleBot(config.token)
 user_dict = {}
 
 
@@ -24,12 +24,12 @@ class User:
 
 
 @bot.message_handler(commands=['start'])
-async def start(message):
+def start(message):
     """
         стартовое сообщение
     """
     chat_id = message.chat.id
-    await bot.send_message(chat_id,
+    bot.send_message(chat_id,
                            text="Привет, {}, тут ты можешь получить информацию о тебе ;)".format(
                                message.from_user.first_name),
                            reply_markup=get_markup()
@@ -39,23 +39,23 @@ async def start(message):
 
 
 @bot.message_handler(func=lambda message: message.text == "❤Получить приятность")
-async def send_message(message):
+def send_message(message):
     """
         когда бот уже активно принимает сообщения
     """
     chat_id = message.chat.id
     message_text = get_text_message(chat_id)
-    await bot.send_message(chat_id, message_text, reply_markup=get_markup())
+    bot.send_message(chat_id, message_text, reply_markup=get_markup())
 
 @bot.message_handler(func=lambda message: message.text == "Отправить")
-async def send_message(message):
+def send_message(message):
     """
         когда бот уже активно принимает сообщения
     """
     chat_id = message.chat.id
     message_text = get_text_message(5141887105, True)
-    await bot.send_message(5141887105, message_text, reply_markup=get_markup())
-    await bot.send_message(chat_id, message_text, reply_markup=get_markup())
+    bot.send_message(5141887105, message_text, reply_markup=get_markup())
+    bot.send_message(chat_id, message_text, reply_markup=get_markup())
 
 def get_markup():
     """
@@ -87,7 +87,7 @@ def get_text_message(chat_id: int, param: bool = False):
     if len(local_list) == size:
         local_list.clear()
 
-    if local_obj["date"] != now.date() or local_obj["hour"] != now.hour:
+    if local_obj["date"] != now.date() or local_obj["hour"] != now.hour or param:
         local_obj.copy(clean_object)
 
     if local_obj["count"] >= 5 and not param:
@@ -115,11 +115,12 @@ async def send_on_time():
 
 
 if __name__ == '__main__':
-    loop = asyncio.new_event_loop()
-    tasks = [
-        loop.create_task(bot.polling()),
-        # loop.create_task(send_on_time()),
-    ]
-    wait_tasks = asyncio.wait(tasks)
-    loop.run_until_complete(wait_tasks)
-    loop.close()
+    #loop = asyncio.new_event_loop()
+    #tasks = [
+    #    loop.create_task(bot.polling()),
+    #    # loop.create_task(send_on_time()),
+    #]
+    #wait_tasks = asyncio.wait(tasks)
+    #loop.run_until_complete(wait_tasks)
+    #loop.close()
+    bot.polling()

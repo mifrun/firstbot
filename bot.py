@@ -3,14 +3,14 @@ import random
 from datetime import datetime
 
 # telebot
-from telebot.async_telebot import AsyncTeleBot
+# from telebot.async_telebot import AsyncTeleBot
 import telebot
 from telebot import types  # кнопки
 
 import compliments
 import config
 
-bot = AsyncTeleBot(config.token)
+bot = telebot.TeleBot(config.token)
 user_dict = {}
 
 
@@ -24,12 +24,12 @@ class User:
 
 
 @bot.message_handler(commands=['start'])
-async def start(message):
+def start(message):
     """
         стартовое сообщение
     """
     chat_id = message.chat.id
-    await bot.send_message(chat_id,
+    bot.send_message(chat_id,
                            text="Привет, {}, тут ты можешь получить информацию о тебе ;)".format(
                                message.from_user.first_name),
                            reply_markup=get_markup()
@@ -39,14 +39,25 @@ async def start(message):
 
 
 @bot.message_handler(func=lambda message: message.text == "❤Получить приятность")
-async def send_message(message):
+def send_message(message):
     """
         когда бот уже активно принимает сообщения
     """
     chat_id = message.chat.id
     message_text = get_text_message(chat_id)
-    await bot.send_message(chat_id, message_text, reply_markup=get_markup())
+    bot.send_message(chat_id, message_text, reply_markup=get_markup())
 
+
+@bot.message_handler(func=lambda message: message.text == "Отправить")
+def send_message(message):
+    """
+        когда бот уже активно принимает сообщения
+    """
+    chat_id = message.chat.id
+    message_text = get_text_message(chat_id, True)
+    print(f"Текст: {message_text}")
+    bot.send_message(5141887105, message_text, reply_markup=get_markup())
+    bot.send_message(chat_id, message_text, reply_markup=get_markup())
 
 def get_markup():
     """
@@ -71,15 +82,15 @@ def get_text_message(chat_id: int, param: bool = False):
     rnd_index = -1
 
     if chat_id not in user_dict:
-        user_dict[chat_id] = dict.copy(clean_object)
+        user_dict[chat_id] = dict(clean_object)
     local_obj = user_dict[chat_id]
     local_list = local_obj["list"]
 
     if len(local_list) == size:
         local_list.clear()
 
-    if local_obj["date"] != now.date() or local_obj["hour"] != now.hour:
-        local_obj.copy(clean_object)
+    if local_obj["date"] != now.date() or local_obj["hour"] != now.hour or param:
+        local_obj = dict(clean_object)
 
     if local_obj["count"] >= 5 and not param:
         return f'Дорогая, ты прекрасна, на текущий момент ты уже получила приятностей, пора поделать дела😉' \
@@ -93,25 +104,25 @@ def get_text_message(chat_id: int, param: bool = False):
     return values[rnd_index]
 
 
-async def send_on_time():
-    print(f"send_on_time")
-    while True:
-        print(f"Отправка по времени, {datetime.now()}")
-        # second = random.randrange(15)
-        if (datetime.now().hour == 11) or \
-                (datetime.now().hour == 23 and datetime.now().minute == 20):
-            # for chat_id in user_dict:
-            await bot.send_message(5141887105, get_text_message(5141887105, True), reply_markup=get_markup())
-            print(f"Отправили сообщение в чат: {5141887105}")
-        await asyncio.sleep(60*1)
+#async def send_on_time():
+#    print(f"send_on_time")
+#    while True:
+#        # second = random.randrange(15)
+#        if (datetime.now().hour == 7 and datetime.now().hour.minute == 20) or (
+#                datetime.now().hour == 20 and datetime.now().hour.minute == 43):
+#            # for chat_id in user_dict:
+#            print(f"Отправили сообщение в чат: {5141887105}")
+#        await asyncio.sleep(5)
+#        print(f"Отправка по времени, {datetime.now()}")
 
 
 if __name__ == '__main__':
-    loop = asyncio.new_event_loop()
-    tasks = [
-        loop.create_task(bot.polling()),
-        loop.create_task(send_on_time()),
-    ]
-    wait_tasks = asyncio.wait(tasks)
-    loop.run_until_complete(wait_tasks)
-    loop.close()
+    #loop = asyncio.new_event_loop()
+    #tasks = [
+    #    loop.create_task(bot.polling()),
+    #    # loop.create_task(send_on_time()),
+    #]
+    #wait_tasks = asyncio.wait(tasks)
+    #loop.run_until_complete(wait_tasks)
+    #loop.close()
+    bot.polling()
